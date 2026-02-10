@@ -1,0 +1,42 @@
+# F1 Photo Intelligence Pipeline Configuration
+
+# Database paths
+database:
+  sqlite_path: ./data/f1_photos.db
+  chroma_path: ./data/chroma_db
+
+# CLIP embedding settings
+clip:
+  model_name: clip-ViT-L-14  # Options: clip-ViT-B-32, clip-ViT-L-14, clip-ViT-H-14
+  batch_size: 100
+  resize_max: 512
+
+# Vision LLM settings
+vlm:
+  model: qwen2-vl:7b  # Ollama model name
+  ollama_url: http://localhost:11434
+  temperature: 0.1
+  max_tokens: 1024
+  resize_max: 1024
+
+# Face recognition settings
+face_recognition:
+  reference_dir: ./data/face_references
+  tolerance: 0.55  # Lower = stricter matching (0.0-1.0)
+  detection_model: hog  # 'hog' (CPU) or 'cnn' (GPU, more accurate)
+
+# Photo scanning settings
+scanner:
+  supported_extensions:
+    - .jpg
+    - .jpeg
+    - .png
+    - .heic
+    - .webp
+
+# Logging
+logging:
+  level: INFO
+  log_dir: ./logs
+  max_log_size_mb: 50
+  backup_count: 5
