@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.indexing.clip_embedder import CLIPEmbedder
 from src.indexing.vlm_describer import VLMDescriber
-from src.indexing.face_scanner import FaceScanner
+# face_scanner imported conditionally if needed
 
 def setup_logging():
     """Configure logging to both file and console."""
@@ -60,6 +60,7 @@ def run_pipeline(
     # Step 3: Face recognition (medium speed)
     if not skip_faces:
         logger.info("\nStep 3: Scanning for faces...")
+        from src.indexing.face_scanner import FaceScanner
         scanner = FaceScanner(db_path=db_path)
         scanned = scanner.process_batch()
         logger.info(f"Scanned {scanned} photos for faces")
