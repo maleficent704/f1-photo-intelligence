@@ -6,6 +6,7 @@ import chromadb
 import sqlite3
 import hashlib
 import logging
+import re
 from datetime import datetime
 
 class CLIPEmbedder:
@@ -95,6 +96,34 @@ class CLIPEmbedder:
         conn.commit()
         conn.close()
 
+    def _parse_gp_from_filename(self, filename: str) -> dict:
+        """
+        Extract GP metadata from filename.
+
+        Expected format: "YYYY GP_Name GP - Additional Info - Subject.jpg"
+        Example: "2021 Abu Dhabi GP - Post Season Testing - Carlos Sainz.jpg"
+
+        Returns dict with 'year' and 'grand_prix' keys.
+        """
+        # Pattern: YYYY followed by GP name ending with "GP"
+        match = re.match(r'^(\d{4})\s+(.+?\s+GP)', filename)
+
+        if match:
+            year = match.group(1)
+            gp_name = match.group(2).strip()
+            return {
+                'year': year,
+                'grand_prix': f"{gp_name.replace(' GP', '').lower().replace(' ', '-')}-{year}",
+                'gp_raw': gp_name
+            }
+
+        # Fallback: no parseable GP info
+        return {
+            'year': None,
+            'grand_prix': 'unknown',
+            'gp_raw': None
+        }
+
     def scan_photos(self, photo_dir: str) -> int:
         """Discover photos and register them in the database."""
         photo_dir = Path(photo_dir)
@@ -109,9 +138,9 @@ class CLIPEmbedder:
 
             photo_id = hashlib.md5(str(img_path).encode()).hexdigest()
 
-            # Extract grand prix from directory structure
-            relative = img_path.relative_to(photo_dir)
-            grand_prix = relative.parts[0] if len(relative.parts) > 1 else 'unknown'
+            # Extract grand prix from filename
+            gp_info = self._parse_gp_from_filename(img_path.name)
+            grand_prix = gp_info['grand_prix']
 
             try:
                 conn.execute('''
@@ -158,11 +187,11 @@ class CLIPEmbedder:
                     ids.append(photo_id)
                     images.append(img)
 
-                    # Extract grand prix from path
-                    gp = Path(file_path).parent.name
+                    # Extract grand prix from filename
+                    gp_info = self._parse_gp_from_filename(Path(file_path).name)
                     metadatas.append({
                         'file_path': file_path,
-                        'grand_prix': gp
+                        'grand_prix': gp_info['grand_prix']
                     })
                 except Exception as e:
                     logging.warning(f"Failed to load {file_path}: {e}")
