@@ -1,0 +1,105 @@
+Analyze this Formula 1 photograph in detail. You are an expert F1 photographer analyzing race photos.
+
+TEAM IDENTIFICATION GUIDE (2020-2024):
+- Ferrari: Red/burgundy cars
+- Red Bull Racing: Dark blue/navy cars (often with red accents)
+- Mercedes: Silver or black cars (black in 2020-2021, silver after)
+- McLaren: Orange/papaya cars (bright orange)
+- Aston Martin: Green cars (British racing green)
+- Alpine: Blue and pink cars
+- Williams: Blue cars
+- Alfa Romeo/Sauber: Red and white cars
+- Haas: White and red or grey cars
+- AlphaTauri/RB: White and blue cars
+
+TRACK IDENTIFICATION:
+- Monaco: Tight barriers, Armco, street circuit
+- Spa: Forested background, elevation changes
+- Silverstone: Wide open spaces, British flags
+- Monza: Historic buildings, long straights
+- Singapore: Night race, Marina Bay, city lights
+- Abu Dhabi: Yas Marina, twilight/night, modern architecture
+
+1. DESCRIPTION: Provide a detailed 2-3 sentence description focusing on:
+   - What team/driver is visible (identify by car color and livery)
+   - What's happening in the photo
+   - Any identifiable track features or context
+
+2. TAGS: Extract structured information:
+
+- teams: Identify F1 teams by car color and livery. Be specific (e.g., "Ferrari", "Red Bull Racing", "Aston Martin"). If you see green cars, it's likely Aston Martin. Orange cars are McLaren. Red cars are Ferrari.
+
+- drivers: Any identifiable drivers by:
+  * Car numbers visible on the car
+  * Helmet designs if you can see them
+  * Driver names visible on overalls or caps
+  * Context from the filename if helpful
+
+- track: Which circuit (Monaco, Spa, Silverstone, Monza, etc.) based on:
+  * Distinctive track features
+  * Background scenery
+  * Barriers and run-off areas
+  * Architecture
+
+- session: Identify session type:
+  * race: Cars on track racing (close together, fighting for position)
+  * qualifying: Single cars on track, time trial
+  * practice: Cars on track, testing setups
+  * podium: Trophy ceremony, champagne
+  * pit_lane: Cars in pit lane
+  * paddock: Behind the scenes, team areas
+  * garage: Inside team garage
+  * team_photo: Group photo with team members
+
+- conditions: Weather and track:
+  * dry, wet, overcast, sunny, night, sunset, twilight
+
+- action: What's happening:
+  * on-track (racing, overtaking, following)
+  * pit_stop (car in pits, mechanics working)
+  * celebration (trophy, champagne, cheering)
+  * crash (accident, barrier contact)
+  * team_photo (posed group photo)
+  * portrait (single person portrait)
+
+- car_numbers: Any visible racing numbers on cars (1-99)
+
+- tire_compound: If visible:
+  * soft (red stripe)
+  * medium (yellow stripe)
+  * hard (white stripe)
+  * intermediate (green)
+  * wet (blue)
+
+- objects: Notable items:
+  * trophy, champagne, flag, helmet, steering_wheel, pit_board
+
+- people_count: Approximate count of people clearly visible (0-100)
+
+- composition: Photo style:
+  * close-up, wide_shot, aerial, portrait, action_shot, team_photo
+
+IMPORTANT:
+- Look carefully at car colors to identify teams
+- If you see team uniforms/clothing, note the colors
+- Car numbers are very helpful for driver identification
+- Be specific with team names (not just "Formula 1")
+
+Respond ONLY with valid JSON, no other text:
+
+{
+    "description": "...",
+    "tags": {
+        "teams": [],
+        "drivers": [],
+        "track": "",
+        "session": "",
+        "conditions": [],
+        "action": [],
+        "car_numbers": [],
+        "tire_compound": [],
+        "objects": [],
+        "people_count": 0,
+        "composition": ""
+    }
+}

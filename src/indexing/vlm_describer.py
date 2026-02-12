@@ -33,24 +33,64 @@ class VLMDescriber:
 
         img_b64 = self._image_to_base64(file_path)
 
-        prompt = """Analyze this Formula 1 photograph. Provide:
+        prompt = """Analyze this Formula 1 photograph in detail. You are an expert F1 photographer analyzing race photos.
 
-1. DESCRIPTION: A detailed description of what's happening in the image (2-3 sentences).
+TEAM IDENTIFICATION GUIDE (2020-2024):
+- Ferrari: Red/burgundy cars
+- Red Bull Racing: Dark blue/navy cars (often with red accents)
+- Mercedes: Silver or black cars (black in 2020-2021, silver after)
+- McLaren: Orange/papaya cars (bright orange)
+- Aston Martin: Green cars (British racing green)
+- Alpine: Blue and pink cars
+- Williams: Blue cars
+- Alfa Romeo/Sauber: Red and white cars
+- Haas: White and red or grey cars
+- AlphaTauri/RB: White and blue cars
 
-2. TAGS: Provide structured tags in these categories (leave blank if not applicable):
-- teams: Which F1 teams are visible (e.g., Ferrari, Red Bull, McLaren)
-- drivers: Any identifiable drivers (by car number, helmet, or recognition)
-- track: Which circuit this might be (if identifiable)
-- session: What session this appears to be (practice, qualifying, race, podium, pit lane, paddock, press conference, fan zone)
-- conditions: Weather and track conditions (dry, wet, overcast, night, sunset)
-- action: What's happening (on-track battle, pit stop, celebration, crash, start, formation lap)
-- car_numbers: Any visible car numbers
-- tire_compound: Visible tire compounds (soft/red, medium/yellow, hard/white, intermediate/green, wet/blue)
-- objects: Notable objects (trophy, champagne, flag, safety car, medical car)
-- people_count: Approximate number of people prominently visible
-- composition: Photo type (close-up, wide shot, aerial, cockpit, behind-the-scenes)
+TRACK IDENTIFICATION:
+- Monaco: Tight barriers, Armco, street circuit
+- Spa: Forested background, elevation changes
+- Silverstone: Wide open spaces, British flags
+- Monza: Historic buildings, long straights
+- Singapore: Night race, Marina Bay, city lights
+- Abu Dhabi: Yas Marina, twilight/night, modern architecture
 
-Respond in JSON format only, no other text:
+1. DESCRIPTION: Provide a detailed 2-3 sentence description focusing on:
+   - What team/driver is visible (identify by car color and livery)
+   - What's happening in the photo
+   - Any identifiable track features or context
+
+2. TAGS: Extract structured information:
+
+- teams: Identify F1 teams by car color and livery. Be specific (e.g., "Ferrari", "Red Bull Racing", "Aston Martin"). If you see green cars, it's likely Aston Martin. Orange cars are McLaren. Red cars are Ferrari.
+
+- drivers: Any identifiable drivers by car numbers, helmet designs, or names visible
+
+- track: Which circuit based on distinctive features, scenery, barriers, or architecture
+
+- session: race, qualifying, practice, podium, pit_lane, paddock, garage, or team_photo
+
+- conditions: Weather and track (dry, wet, overcast, sunny, night, sunset, twilight)
+
+- action: on-track, pit_stop, celebration, crash, team_photo, or portrait
+
+- car_numbers: Any visible racing numbers on cars (1-99)
+
+- tire_compound: soft (red), medium (yellow), hard (white), intermediate (green), wet (blue)
+
+- objects: trophy, champagne, flag, helmet, steering_wheel, pit_board
+
+- people_count: Approximate count of people clearly visible (0-100)
+
+- composition: close-up, wide_shot, aerial, portrait, action_shot, or team_photo
+
+IMPORTANT:
+- Look carefully at car colors to identify teams
+- If you see team uniforms/clothing, note the colors
+- Car numbers are very helpful for driver identification
+- Be specific with team names (not just "Formula 1")
+
+Respond ONLY with valid JSON, no other text:
 {
     "description": "...",
     "tags": {
@@ -82,7 +122,16 @@ Respond in JSON format only, no other text:
             }
         )
 
-        result = response.json()['response']
+        # Check response status
+        response.raise_for_status()
+
+        # Parse response
+        response_data = response.json()
+        if 'response' not in response_data:
+            logging.error(f"No 'response' key in Ollama output. Got: {response_data.keys()}")
+            raise KeyError(f"Ollama response missing 'response' key. Response: {response_data}")
+
+        result = response_data['response']
 
         # Parse JSON from response (handle potential markdown wrapping)
         try:
